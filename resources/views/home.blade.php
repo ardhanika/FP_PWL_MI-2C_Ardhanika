@@ -1,0 +1,55 @@
+@extends('layouts.parent')
+@section('content')
+
+        <!-- Blog Entries Column -->
+        <div class="col-md-8">
+
+            <h1 class="my-4">Home
+
+            </h1>
+
+            @foreach ($article as $item)
+            <!-- Blog Post -->
+            <?php
+            $jumlah_like = App\Like::select(DB::raw('count(*) as jumlah_likes'))->where('id_article', $item->id)->first();
+            $jumlah_comment = App\Comment::select(DB::raw('count(*) as jumlah'))->where('id_article', $item->id)->first()
+            ?>
+            <div class="card mb-4">
+                <img class="card-img-top" src="{{ asset('/images/'.$item->featured_image) }}" alt="Card image cap">
+                <div class="card-body">
+                    <h2 class="card-title">{{$item->title}}</h2>
+                    <p class="card-text">
+                    <?php echo substr($item->content,0,250); ?>...
+                    </p>
+                    <a href="article/{{ $item->id }}" class="btn btn-primary">Read More &rarr;</a>
+                </div>
+                <div class="card-footer text-muted">
+                    Posted on {{$item->created_at}} |
+                    <a href="/category/{{$item->category}}">{{$item->category}}</a> | 
+                    <img  class="like" style="width: 2.5%;cursor: pointer;"
+                        src="{{ asset('/images/hatipolos.png') }}" alt="">
+                    <span class="badge badge-light" id="tampil_likes">{{$jumlah_like->jumlah_likes}}</span>
+                    <img  style="width: 2.5%; ?>"
+                        src="{{ asset('/images/speech-bubble.png') }}" alt="">
+                    <span class="badge badge-light">{{$jumlah_comment->jumlah}}</span>
+                </div>
+            </div>
+            @endforeach
+
+
+            <!-- Pagination -->
+            <ul class="pagination justify-content-center mb-4">
+                @if($article->onFirstPage()!=1)
+                <li class="page-item">
+                    <a class="page-link" href="{{$article->previousPageUrl()}}">&larr; Previous</a>
+                </li>
+                @endif
+                @if($article->hasMorePages()==1)
+                <li class="page-item">
+                    <a class="page-link" href="{{$article->nextPageUrl()}}">Next &rarr;</a>
+                </li>
+                @endif
+            </ul>
+
+        </div>
+        @endsection
